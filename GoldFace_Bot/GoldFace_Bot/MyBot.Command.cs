@@ -40,17 +40,27 @@ namespace GoldFace_Bot
 
 			if (DirectoryCheck(PHOTO_FILE_PATH) == false) { SendErrorMessage(message); return; };
 
-			string[] files = Directory.GetFiles(PHOTO_FILE_PATH);
-			int rand_Pic_Number = new Random().Next(1, files.Length);
-			string filePath = files[rand_Pic_Number];
-			string fileName = Path.GetFileName(filePath);
+			string filePath = string.Empty;
+			string fileName = string.Empty;
 
-			using (var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
+			try
 			{
-				var fts = new FileToSend(fileName, fileStream);
+				filePath = RandFilePath();
+				fileName = Path.GetFileName(filePath);
 
-				await Bot.SendPhotoAsync(message.Chat.Id, fts, fileName);
+				using (var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
+				{
+					var fts = new FileToSend(fileName, fileStream);
+
+					await Bot.SendPhotoAsync(message.Chat.Id, fts, fileName);
+				}
 			}
+			catch
+			{
+				string log = string.Format("filePath:'{0}', fileName:'{1}'", filePath, fileName);
+				Console.WriteLine(log);
+			}
+
 		}
 
 		#endregion

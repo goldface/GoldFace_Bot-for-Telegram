@@ -21,8 +21,8 @@ namespace GoldFace_Bot
 	{
 		enum USER_TYPE
 		{
-			Master = 0,
-			Guest = 9
+			Guest = 0,
+			Master = 10
 		}
 
 		private readonly TelegramBotClient Bot;
@@ -83,7 +83,7 @@ namespace GoldFace_Bot
 			userNode.Attributes.Append(attribute);
 			attribute = xmlUserlist.CreateAttribute("Type");
 
-			int typeNumber = 9;
+			int typeNumber = (int)USER_TYPE.Guest;
 			string typeName;
 
 			bool check = int.TryParse(type, out typeNumber);
@@ -95,7 +95,7 @@ namespace GoldFace_Bot
 				Console.WriteLine("Add User Failed");
 				return false;
 			}
-				
+
 			attribute.Value = typeName;
 			userNode.Attributes.Append(attribute);
 			rootNode.AppendChild(userNode);
@@ -154,7 +154,7 @@ namespace GoldFace_Bot
 			if (message == null || message.Type != MessageType.TextMessage) return;
 
 			bool access = await AccessCheck(message);
-			if(access == false) { return; }
+			if (access == false) { return; }
 
 			if (CommandCheck(message.Text, "/photoinfo"))
 			{
@@ -178,6 +178,13 @@ namespace GoldFace_Bot
 			}
 
 			await Task.Delay(100);
+		}
+
+		private string RandFilePath()
+		{
+			string[] files = Directory.GetFiles(PHOTO_FILE_PATH);
+			int rand_Pic_Number = new Random().Next(1, files.Length - 1);
+			return files[rand_Pic_Number];
 		}
 
 		private bool DirectoryCheck(string path)
