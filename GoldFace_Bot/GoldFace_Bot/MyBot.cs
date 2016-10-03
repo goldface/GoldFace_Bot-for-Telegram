@@ -25,14 +25,22 @@ namespace GoldFace_Bot
 			Master = 10
 		}
 
+		enum IMAGE_TYPE
+		{
+			ANIME_CAPTURE = 0,
+			PUBLIC_ILLUST = 1,
+		}
+
 		private readonly TelegramBotClient Bot;
-		private readonly string PHOTO_FILE_PATH;
+		private readonly string ANIME_CAPTURE_FILE_PATH;
+		private readonly string PUBLIC_ILLUST_FILE_PATH;
 		private readonly XmlDocument xmlUserlist;
 
-		public MyBot(string token, string photo_path)
+		public MyBot(string token, string anime_capture_path, string public_illust_path)
 		{
 			Bot = new TelegramBotClient(token);
-			PHOTO_FILE_PATH = photo_path;
+			ANIME_CAPTURE_FILE_PATH = anime_capture_path;
+			PUBLIC_ILLUST_FILE_PATH = public_illust_path;
 			xmlUserlist = new XmlDocument();
 		}
 
@@ -156,13 +164,13 @@ namespace GoldFace_Bot
 			bool access = await AccessCheck(message);
 			if (access == false) { return; }
 
-			if (CommandCheck(message.Text, "/photoinfo"))
+			if (CommandCheck(message.Text, "/animecaptureinfo"))
 			{
 				PhotoInfo(message);
 			}
-			else if (CommandCheck(message.Text, "/photo"))
+			else if (CommandCheck(message.Text, "/animecapture"))
 			{
-				Photo(message);
+				AnimeCapture(message);
 			}
 			else if (CommandCheck(message.Text, "/help"))
 			{
@@ -176,15 +184,34 @@ namespace GoldFace_Bot
 			{
 				DeleteUser(message);
 			}
+			else if (CommandCheck(message.Text, "/illustinfo"))
+			{
+				Public_IllustInfo(message);
+			}
+			else if (CommandCheck(message.Text, "/illust"))
+			{
+				Public_Illust(message);
+			}
 
 			await Task.Delay(100);
 		}
 
-		private string RandFilePath()
+		private string RandFilePath(IMAGE_TYPE type)
 		{
-			string[] files = Directory.GetFiles(PHOTO_FILE_PATH);
+			string path = GetImagePath(type);
+			string[] files = Directory.GetFiles(path);
 			int rand_Pic_Number = new Random().Next(1, files.Length - 1);
 			return files[rand_Pic_Number];
+		}
+
+		private string GetImagePath(IMAGE_TYPE type)
+		{
+			switch (type)
+			{
+				case IMAGE_TYPE.ANIME_CAPTURE: { return ANIME_CAPTURE_FILE_PATH; }
+				case IMAGE_TYPE.PUBLIC_ILLUST: { return PUBLIC_ILLUST_FILE_PATH; }
+				default: { return ANIME_CAPTURE_FILE_PATH; }
+			}
 		}
 
 		private bool DirectoryCheck(string path)

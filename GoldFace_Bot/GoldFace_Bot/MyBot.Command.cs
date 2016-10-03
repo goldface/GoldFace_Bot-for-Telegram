@@ -17,35 +17,35 @@ namespace GoldFace_Bot
 {
 	partial class MyBot
 	{
-		#region ## /photoinfo ##
+		#region ## /animecaptureinfo ##
 
 		private async void PhotoInfo(Message message)
 		{
 			var info = @"The total number of images of Bot is ";
 
-			if (DirectoryCheck(PHOTO_FILE_PATH) == false) { SendErrorMessage(message); return; };
+			if (DirectoryCheck(ANIME_CAPTURE_FILE_PATH) == false) { SendErrorMessage(message); return; };
 
-			string[] files = Directory.GetFiles(PHOTO_FILE_PATH);
+			string[] files = Directory.GetFiles(ANIME_CAPTURE_FILE_PATH);
 			await Bot.SendTextMessageAsync(message.Chat.Id, info + files.Length.ToString(),
 						replyMarkup: null);
 		}
 
 		#endregion
 
-		#region ## /photo ##
+		#region ## /animecapture ##
 
-		private async void Photo(Message message)
+		private async void AnimeCapture(Message message)
 		{
 			await Bot.SendChatActionAsync(message.Chat.Id, ChatAction.UploadPhoto);
 
-			if (DirectoryCheck(PHOTO_FILE_PATH) == false) { SendErrorMessage(message); return; };
+			if (DirectoryCheck(ANIME_CAPTURE_FILE_PATH) == false) { SendErrorMessage(message); return; };
 
 			string filePath = string.Empty;
 			string fileName = string.Empty;
 
 			try
 			{
-				filePath = RandFilePath();
+				filePath = RandFilePath(IMAGE_TYPE.ANIME_CAPTURE);
 				fileName = Path.GetFileName(filePath);
 
 				using (var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
@@ -70,9 +70,11 @@ namespace GoldFace_Bot
 		private async void Help(Message message)
 		{
 			var usage = @"Usage:
-/help - show command
-/photo - send a photo
-/photoinfo - send photos total count
+/help - show command.
+/animecapture - send a random anime capture image.
+/animecaptureinfo - send a anime capture image total count.
+/illust - send a random illust image.
+/illustinfo - send a illust image total count.
 ";
 
 			await Bot.SendTextMessageAsync(message.Chat.Id, usage,
@@ -105,6 +107,54 @@ namespace GoldFace_Bot
 			string msg = "Delete User Success.";
 			await Bot.SendTextMessageAsync(message.Chat.Id, msg,
 			   replyMarkup: new ReplyKeyboardHide());
+		}
+
+		#endregion
+
+		#region ## /illustinfo ##
+
+		private async void Public_IllustInfo(Message message)
+		{
+			var info = @"The total number of images of Bot is ";
+
+			if (DirectoryCheck(PUBLIC_ILLUST_FILE_PATH) == false) { SendErrorMessage(message); return; };
+
+			string[] files = Directory.GetFiles(PUBLIC_ILLUST_FILE_PATH);
+			await Bot.SendTextMessageAsync(message.Chat.Id, info + files.Length.ToString(),
+						replyMarkup: null);
+		}
+
+		#endregion
+
+		#region ## /illust ##
+
+		private async void Public_Illust(Message message)
+		{
+			await Bot.SendChatActionAsync(message.Chat.Id, ChatAction.UploadPhoto);
+
+			if (DirectoryCheck(PUBLIC_ILLUST_FILE_PATH) == false) { SendErrorMessage(message); return; };
+
+			string filePath = string.Empty;
+			string fileName = string.Empty;
+
+			try
+			{
+				filePath = RandFilePath(IMAGE_TYPE.PUBLIC_ILLUST);
+				fileName = Path.GetFileName(filePath);
+
+				using (var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
+				{
+					var fts = new FileToSend(fileName, fileStream);
+
+					await Bot.SendPhotoAsync(message.Chat.Id, fts, string.Empty);
+				}
+			}
+			catch
+			{
+				string log = string.Format("filePath:'{0}', fileName:'{1}'", filePath, fileName);
+				Console.WriteLine(log);
+			}
+
 		}
 
 		#endregion

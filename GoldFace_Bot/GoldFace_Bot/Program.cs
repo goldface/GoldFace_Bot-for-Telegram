@@ -17,12 +17,14 @@ namespace GoldFace_Bot
 		static void Main(string[] args)
 		{
 			string token = Properties.Settings.Default.MY_BOT_API_TOKEN;
-			string path = Properties.Settings.Default.PHOTO_FILE_PATH;
+			string anime_capture_path = Properties.Settings.Default.ANIME_CAPTURE_FILE_PATH;
+			string public_illust_path = Properties.Settings.Default.PUBLIC_ILLUST_FILE_PATH;
 
-			Bot = new MyBot(token, path);
+			Bot = new MyBot(token, anime_capture_path, public_illust_path);
 
 			Console.WriteLine(token);
-			Console.WriteLine(path);
+			Console.WriteLine("ANIME_CAPTURE_FILE_PATH: " + anime_capture_path);
+			Console.WriteLine("PUBLIC_ILLUST_FILE_PATH: " + public_illust_path);
 
 			Bot.Start();
 
