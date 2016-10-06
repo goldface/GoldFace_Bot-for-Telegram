@@ -200,7 +200,8 @@ namespace GoldFace_Bot
 		{
 			string path = GetImagePath(type);
 			string[] files = Directory.GetFiles(path);
-			int rand_Pic_Number = new Random().Next(1, files.Length - 1);
+			Random r = new Random(unchecked((int)DateTime.Now.Ticks));
+			int rand_Pic_Number = r.Next(0, files.Length - 1);
 			return files[rand_Pic_Number];
 		}
 

@@ -55,10 +55,11 @@ namespace GoldFace_Bot
 					await Bot.SendPhotoAsync(message.Chat.Id, fts, fileName);
 				}
 			}
-			catch
+			catch(System.Exception e)
 			{
 				string log = string.Format("filePath:'{0}', fileName:'{1}'", filePath, fileName);
 				Console.WriteLine(log);
+				Console.WriteLine("Send Failed: " + e.ToString());
 			}
 
 		}
@@ -149,10 +150,11 @@ namespace GoldFace_Bot
 					await Bot.SendPhotoAsync(message.Chat.Id, fts, string.Empty);
 				}
 			}
-			catch
+			catch(System.Exception e)
 			{
 				string log = string.Format("filePath:'{0}', fileName:'{1}'", filePath, fileName);
 				Console.WriteLine(log);
+				Console.WriteLine("Send Failed: " + e.ToString());
 			}
 
 		}
