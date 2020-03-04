@@ -11,9 +11,6 @@ using Telegram.Bot;
 using Telegram.Bot.Args;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
-using Telegram.Bot.Types.InlineQueryResults;
-using Telegram.Bot.Types.InputMessageContents;
-using Telegram.Bot.Types.ReplyMarkups;
 
 namespace GoldFace_Bot
 {
@@ -159,7 +156,7 @@ namespace GoldFace_Bot
 		private async void BotOnMessageReceived(object sender, MessageEventArgs messageEventArgs)
 		{
 			var message = messageEventArgs.Message;
-			if (message == null || message.Type != MessageType.TextMessage) return;
+			if (message == null || message.Type != MessageType.Text) return;
 
 			bool access = await AccessCheck(message);
 			if (access == false) { return; }
@@ -230,7 +227,7 @@ namespace GoldFace_Bot
 				Console.WriteLine("[!Warning!] Unauthorized users have access.");
 				Console.WriteLine(string.Format("UserName:'{0}'", message.From.Username));
 				var msg = @"[!Warning!] Unauthorized users. Please contact master";
-				await Bot.SendTextMessageAsync(message.Chat.Id, msg, replyMarkup: new ReplyKeyboardHide());
+				await Bot.SendTextMessageAsync(message.Chat.Id, msg);
 			}
 
 			return access;
@@ -245,7 +242,8 @@ namespace GoldFace_Bot
 		private async void SendErrorMessage(Message message, string msg = "")
 		{
 			var vMsg = string.IsNullOrEmpty(msg) ? @"[!Error!] Sorry. A small problem has occurred." : msg;
-			await Bot.SendTextMessageAsync(message.Chat.Id, vMsg, replyMarkup: new ReplyKeyboardHide());
+			//await Bot.SendTextMessageAsync(message.Chat.Id, vMsg, replyMarkup: new ReplyKeyboardHide());
+			await Bot.SendTextMessageAsync(message.Chat.Id, vMsg);
 		}
 	}
 }

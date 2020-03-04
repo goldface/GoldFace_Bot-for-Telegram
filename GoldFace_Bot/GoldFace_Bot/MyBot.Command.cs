@@ -10,8 +10,8 @@ using Telegram.Bot.Args;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.InlineQueryResults;
-using Telegram.Bot.Types.InputMessageContents;
 using Telegram.Bot.Types.ReplyMarkups;
+using Telegram.Bot.Types.InputFiles;
 
 namespace GoldFace_Bot
 {
@@ -50,7 +50,7 @@ namespace GoldFace_Bot
 
 				using (var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
 				{
-					var fts = new FileToSend(fileName, fileStream);
+					var fts = new InputOnlineFile(fileStream, fileName);
 
 					await Bot.SendPhotoAsync(message.Chat.Id, fts, fileName);
 				}
@@ -78,8 +78,7 @@ namespace GoldFace_Bot
 /illustinfo - send a illust image total count.
 ";
 
-			await Bot.SendTextMessageAsync(message.Chat.Id, usage,
-				replyMarkup: new ReplyKeyboardHide());
+			await Bot.SendTextMessageAsync(message.Chat.Id, usage);
 		}
 
 		#endregion
@@ -92,8 +91,7 @@ namespace GoldFace_Bot
 			if (result.Length < 3) { SendErrorMessage(message, "Command is not correct."); return; }
 			if (AddUserXml(result[1], result[2]) == false) { SendErrorMessage(message, "Add User Failed."); return; }
 			string msg = "Add User Success.";
-			await Bot.SendTextMessageAsync(message.Chat.Id, msg,
-			   replyMarkup: new ReplyKeyboardHide());
+			await Bot.SendTextMessageAsync(message.Chat.Id, msg);
 		}
 
 		#endregion
@@ -106,8 +104,7 @@ namespace GoldFace_Bot
 			if (result.Length < 2) { SendErrorMessage(message, "Command is not correct."); return; }
 			if (DeleteUserXml(message.From.Username, result[1]) == false) { SendErrorMessage(message, "Delete User Failed."); return; }
 			string msg = "Delete User Success.";
-			await Bot.SendTextMessageAsync(message.Chat.Id, msg,
-			   replyMarkup: new ReplyKeyboardHide());
+			await Bot.SendTextMessageAsync(message.Chat.Id, msg);
 		}
 
 		#endregion
@@ -145,7 +142,7 @@ namespace GoldFace_Bot
 
 				using (var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
 				{
-					var fts = new FileToSend(fileName, fileStream);
+					var fts = new InputOnlineFile(fileStream, fileName);
 
 					await Bot.SendPhotoAsync(message.Chat.Id, fts, string.Empty);
 				}
