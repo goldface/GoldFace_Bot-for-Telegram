@@ -1,12 +1,10 @@
 ﻿using System;
-using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Configuration;
 using System.Diagnostics;
-
 
 namespace GoldFace_Bot
 {
@@ -16,9 +14,19 @@ namespace GoldFace_Bot
 
 		static void Main(string[] args)
 		{
-			string token = Properties.Settings.Default.MY_BOT_API_TOKEN;
-			string anime_capture_path = Properties.Settings.Default.ANIME_CAPTURE_FILE_PATH;
-			string public_illust_path = Properties.Settings.Default.PUBLIC_ILLUST_FILE_PATH;
+			BotConfig.Init();
+
+			bool lIsLoad = BotConfig.instance.IsInitComplete;
+			if(lIsLoad == false)
+			{
+				Console.WriteLine("[Error] Load 'BotConfig' File Failed!!");
+				Console.ReadLine();
+				return;
+			}
+
+			string token = BotConfig.instance.Config.ApiToken;
+			string anime_capture_path = BotConfig.instance.Config.AnimeCaptureFilePath;
+			string public_illust_path = BotConfig.instance.Config.PublicIllustFilePath;
 
 			Bot = new MyBot(token, anime_capture_path, public_illust_path);
 
@@ -27,7 +35,6 @@ namespace GoldFace_Bot
 			Console.WriteLine("PUBLIC_ILLUST_FILE_PATH: " + public_illust_path);
 
 			Bot.Start();
-
 		}
 
 		static void AddUpdateAppSettings(string key, string value)
