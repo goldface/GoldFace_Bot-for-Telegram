@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 
 using Telegram.Bot;
 using Telegram.Bot.Args;
@@ -76,6 +77,8 @@ namespace GoldFace_Bot
 /animecaptureinfo - send a anime capture image total count.
 /illust - send a random illust image.
 /illustinfo - send a illust image total count.
+/bank - author bank account.
+/bank - all user bank account.
 ";
 
 			await Bot.SendTextMessageAsync(message.Chat.Id, usage);
@@ -156,6 +159,44 @@ namespace GoldFace_Bot
 
 		}
 
+		#endregion
+
+		#region ## /bank ##
+
+		private async void BankAccountInfo(Message message)
+		{
+			var bankInfo = BotConfig.instance.Config.BankAccountInfo;
+
+			var username = message.From.Username;
+			//string xpath = string.Format(, username);
+			XmlNodeList userNodes = xmlUserlist.SelectNodes("//users/user");
+
+			int iUserIdx = 0;
+			for(int iUser = 0; iUser < userNodes.Count; ++iUser)
+			{
+				if(userNodes[iUser].Attributes["Name"].Value.Equals(username))
+				{
+					iUserIdx = iUser;
+					break;
+				}
+			}
+
+			await Bot.SendTextMessageAsync(message.Chat.Id, bankInfo[iUserIdx]);
+		}
+
+		#endregion
+
+		#region ## /bankall ##
+		private async void BankAllAccountInfo(Message message)
+		{
+			var bankInfo = BotConfig.instance.Config.BankAccountInfo;
+
+			StringBuilder sb = new StringBuilder();
+			for (int ibank = 0; ibank < bankInfo.Length; ++ibank)
+				sb.AppendLine(bankInfo[ibank]);
+
+			await Bot.SendTextMessageAsync(message.Chat.Id, sb.ToString());
+		}
 		#endregion
 	}
 }

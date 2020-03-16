@@ -13,6 +13,7 @@ namespace GoldFace_Bot
             public string ApiToken { get; set; }
             public string AnimeCaptureFilePath { get; set; }
             public string PublicIllustFilePath { get; set; }
+            public string[] BankAccountInfo { get; set; }
         }
 
         private static readonly string cBotConfigDirectoryName = @"Config";
@@ -70,6 +71,7 @@ namespace GoldFace_Bot
             lConfig.ApiToken = string.Empty;
             lConfig.AnimeCaptureFilePath = string.Empty;
             lConfig.PublicIllustFilePath = string.Empty;
+            lConfig.BankAccountInfo = new string[] { "" };
 
             if (Directory.Exists(cBotConfigDirectoryName) == false)
                 Directory.CreateDirectory(cBotConfigDirectoryName);

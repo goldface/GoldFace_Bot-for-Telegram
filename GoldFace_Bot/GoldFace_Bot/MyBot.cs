@@ -189,8 +189,16 @@ namespace GoldFace_Bot
 			{
 				Public_Illust(message);
 			}
+			else if(CommandCheck(message.Text, "/bankall"))
+			{
+				BankAllAccountInfo(message);
+			}
+			else if(CommandCheck(message.Text, "/bank"))
+			{
+				BankAccountInfo(message);
+			}
 
-			await Task.Delay(100);
+		   await Task.Delay(100);
 		}
 
 		private string RandFilePath(IMAGE_TYPE type)
