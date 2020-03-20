@@ -18,6 +18,8 @@ namespace GoldFace_Bot
 {
 	partial class MyBot
 	{
+		private static readonly char[] cSeparator = new char[] { ' ' };
+
 		#region ## /animecaptureinfo ##
 
 		private async void PhotoInfo(Message message)
@@ -34,7 +36,7 @@ namespace GoldFace_Bot
 		#endregion
 
 		#region ## /animecapture ##
-
+		private Stack<Stream> mTempStreamStack = new Stack<Stream>(2^4);
 		private async void AnimeCapture(Message message)
 		{
 			await Bot.SendChatActionAsync(message.Chat.Id, ChatAction.UploadPhoto);
@@ -43,20 +45,48 @@ namespace GoldFace_Bot
 
 			string filePath = string.Empty;
 			string fileName = string.Empty;
+			string recvMessage = message.Text;
 
 			try
 			{
-				filePath = RandFilePath(IMAGE_TYPE.ANIME_CAPTURE);
-				fileName = Path.GetFileName(filePath);
-
-				using (var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
+				string[] lStringArr = recvMessage.Split(cSeparator, StringSplitOptions.None);
+				int lCount = 1;
+				if (lStringArr.Length >= 2)
 				{
-					var fts = new InputOnlineFile(fileStream, fileName);
+					if (Int32.TryParse(lStringArr[1], out lCount) == false)
+					{
+						await Bot.SendTextMessageAsync(message.Chat.Id, "Invalid Argument. (Argument Only integer.)");
+						return;
+					}
+				}
 
-					await Bot.SendPhotoAsync(message.Chat.Id, fts, fileName);
+				if (lCount > 10)
+				{
+					await Bot.SendTextMessageAsync(message.Chat.Id, "Too many request. (max:10)");
+					return;
+				}
+
+				IAlbumInputMedia[] inputMedia = new IAlbumInputMedia[lCount];
+				for (int iCount = 0; iCount < lCount; ++iCount)
+				{
+					filePath = RandFilePath(IMAGE_TYPE.ANIME_CAPTURE);
+					fileName = Path.GetFileName(filePath);
+
+					Stream stream = System.IO.File.OpenRead(filePath);
+					mTempStreamStack.Push(stream);
+					inputMedia[iCount] = new InputMediaPhoto(new InputMedia(stream, fileName));
+				}
+
+				await Bot.SendMediaGroupAsync(inputMedia, message.Chat.Id);
+
+				while (mTempStreamStack.Count > 0)
+				{
+					Stream stream = mTempStreamStack.Pop();
+					stream.Close();
+					stream.Dispose();
 				}
 			}
-			catch(System.Exception e)
+			catch (System.Exception e)
 			{
 				string log = string.Format("filePath:'{0}', fileName:'{1}'", filePath, fileName);
 				Console.WriteLine(log);
