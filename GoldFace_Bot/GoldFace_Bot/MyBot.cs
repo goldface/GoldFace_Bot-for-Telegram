@@ -9,6 +9,7 @@ using System.Xml.Linq;
 
 using Telegram.Bot;
 using Telegram.Bot.Args;
+using Telegram.Bot.Requests;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
@@ -32,6 +33,7 @@ namespace GoldFace_Bot
 		private readonly string ANIME_CAPTURE_FILE_PATH;
 		private readonly string PUBLIC_ILLUST_FILE_PATH;
 		private readonly XmlDocument xmlUserlist;
+		private static readonly Random cRandom = new Random(unchecked((int)DateTime.Now.Ticks));
 
 		public MyBot(string token, string anime_capture_path, string public_illust_path)
 		{
@@ -205,8 +207,7 @@ namespace GoldFace_Bot
 		{
 			string path = GetImagePath(type);
 			string[] files = Directory.GetFiles(path);
-			Random r = new Random(unchecked((int)DateTime.Now.Ticks));
-			int rand_Pic_Number = r.Next(0, files.Length - 1);
+			int rand_Pic_Number = cRandom.Next(0, files.Length - 1);
 			return files[rand_Pic_Number];
 		}
 
