@@ -88,6 +88,13 @@ namespace GoldFace_Bot
 			}
 			catch (System.Exception e)
 			{
+				while (mTempStreamStack.Count > 0)
+				{
+					Stream stream = mTempStreamStack.Pop();
+					stream.Close();
+					stream.Dispose();
+				}
+
 				string log = string.Format("filePath:'{0}', fileName:'{1}'", filePath, fileName);
 				Console.WriteLine(log);
 				Console.WriteLine("Send Failed: " + e.ToString());
