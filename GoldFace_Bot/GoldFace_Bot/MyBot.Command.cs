@@ -174,18 +174,47 @@ namespace GoldFace_Bot
 
 			string filePath = string.Empty;
 			string fileName = string.Empty;
+			string recvMessage = message.Text;
 
 			try
 			{
-				filePath = RandFilePath(IMAGE_TYPE.PUBLIC_ILLUST);
-				fileName = Path.GetFileName(filePath);
-
-				using (var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
+				string[] lStringArr = recvMessage.Split(cSeparator, StringSplitOptions.None);
+				int lCount = 1;
+				if (lStringArr.Length >= 2)
 				{
-					var fts = new InputOnlineFile(fileStream, fileName);
-
-					await Bot.SendPhotoAsync(message.Chat.Id, fts, string.Empty);
+					if (Int32.TryParse(lStringArr[1], out lCount) == false)
+					{
+						await Bot.SendTextMessageAsync(message.Chat.Id, "Invalid Argument. (Argument Only integer.)");
+						return;
+					}
 				}
+
+				if (lCount > 10)
+				{
+					await Bot.SendTextMessageAsync(message.Chat.Id, "Too many request. (max:10)");
+					return;
+				}
+
+				IAlbumInputMedia[] inputMedia = new IAlbumInputMedia[lCount];
+				for (int iCount = 0; iCount < lCount; ++iCount)
+				{
+					filePath = RandFilePath(IMAGE_TYPE.PUBLIC_ILLUST);
+					fileName = Path.GetFileName(filePath);
+
+					Stream stream = System.IO.File.OpenRead(filePath);
+					mTempStreamStack.Push(stream);
+					inputMedia[iCount] = new InputMediaPhoto(new InputMedia(stream, fileName));
+				}
+
+				await Bot.SendMediaGroupAsync(inputMedia, message.Chat.Id);
+
+				while (mTempStreamStack.Count > 0)
+				{
+					Stream stream = mTempStreamStack.Pop();
+					stream.Close();
+					stream.Dispose();
+				}
+
 			}
 			catch(System.Exception e)
 			{
