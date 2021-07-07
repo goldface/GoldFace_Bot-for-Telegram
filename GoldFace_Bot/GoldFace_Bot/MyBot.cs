@@ -29,6 +29,19 @@ namespace GoldFace_Bot
 			PUBLIC_ILLUST = 1,
 		}
 
+        enum ANIME_WEEK
+        {
+			Sunday = 0,
+            Monday,
+			Tuesday,
+			Wednesday,
+			Thursday,
+			Friday,
+			Saturday,
+			etc,
+			newly
+        }
+
 		private readonly TelegramBotClient Bot;
 		private readonly string ANIME_CAPTURE_FILE_PATH;
 		private readonly string PUBLIC_ILLUST_FILE_PATH;
@@ -199,6 +212,10 @@ namespace GoldFace_Bot
 			{
 				BankAccountInfo(message);
 			}
+			else if (CommandCheck(message.Text, "/anime"))
+            {
+                TodayAnimeInfo(message);
+            }
 
 		   await Task.Delay(100);
 		}
