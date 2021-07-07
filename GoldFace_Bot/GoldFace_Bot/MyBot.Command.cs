@@ -275,7 +275,8 @@ namespace GoldFace_Bot
             int dayOfWeek = (int)DateTime.Now.DayOfWeek;
             if (result.Length >= 2)
             {
-                dayOfWeek = Int32.Parse(result[1]);
+                if (Int32.TryParse(result[1], out dayOfWeek) == false)
+                    dayOfWeek = ConvertDayToNumber.Convert(result[1]);
             }
             string responseText = String.Empty;
             string url = $"{BotConfig.instance.Config.AnimeDataUrl}{dayOfWeek}";

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Eventing.Reader;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -28,6 +29,23 @@ namespace GoldFace_Bot
 
                 return $"{lStatus}{subject}         {lGenres}";
             }
+        }
+
+        public class ConvertDayToNumber
+        {
+            public static int Convert(string day)
+            {
+                if(day.StartsWith("일")) { return 0; }
+                else if (day.StartsWith("월")) { return 1; }
+                else if (day.StartsWith("화")) { return 2; }
+                else if (day.StartsWith("수")) { return 3; }
+                else if (day.StartsWith("목")) { return 4; }
+                else if (day.StartsWith("금")) { return 5; }
+                else if (day.StartsWith("토")) { return 6; }
+                else if (day.StartsWith("기")) { return 7; }
+                else if (day.StartsWith("신")) { return 8; }
+                else { return (int) DateTime.Now.DayOfWeek;}
+            }    
         }
     }
 }
