@@ -116,7 +116,8 @@ namespace GoldFace_Bot
 /illust - send a random illust image.
 /illustinfo - send a illust image total count.
 /bank - author bank account.
-/bank - all user bank account.
+/bankall - all user bank account.
+/anime - show today anime list.
 ";
 
             await Bot.SendTextMessageAsync(message.Chat.Id, usage);
