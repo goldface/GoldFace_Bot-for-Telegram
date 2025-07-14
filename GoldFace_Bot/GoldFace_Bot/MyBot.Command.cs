@@ -22,8 +22,8 @@ namespace GoldFace_Bot
         private static readonly char[] cSeparator = new char[] { ' ' };
 
         #region ## /animecaptureinfo ##
-
-        private async void PhotoInfo(Message message)
+        
+        private async Task PhotoInfo(Message message)
         {
             var info = @"The total number of images of Bot is ";
 
@@ -38,7 +38,7 @@ namespace GoldFace_Bot
 
         #region ## /animecapture ##
         private Stack<Stream> mTempStreamStack = new Stack<Stream>(2 ^ 4);
-        private async void AnimeCapture(Message message)
+        private async Task AnimeCapture(Message message)
         {
             await Bot.SendChatActionAsync(message.Chat.Id, ChatAction.UploadPhoto);
 
@@ -107,7 +107,7 @@ namespace GoldFace_Bot
 
         #region ## /help ##
 
-        private async void Help(Message message)
+        private async Task Help(Message message)
         {
             var usage = @"Usage:
 /help - show command.
@@ -127,7 +127,7 @@ namespace GoldFace_Bot
 
         #region ## /adduser ##
 
-        private async void AddUser(Message message)
+        private async Task AddUser(Message message)
         {
             string[] result = message.Text.Split(' ');
             if (result.Length < 3) { SendErrorMessage(message, "Command is not correct."); return; }
@@ -140,7 +140,7 @@ namespace GoldFace_Bot
 
         #region ## /deleteuser ##
 
-        private async void DeleteUser(Message message)
+        private async Task DeleteUser(Message message)
         {
             string[] result = message.Text.Split(' ');
             if (result.Length < 2) { SendErrorMessage(message, "Command is not correct."); return; }
@@ -153,7 +153,7 @@ namespace GoldFace_Bot
 
         #region ## /illustinfo ##
 
-        private async void Public_IllustInfo(Message message)
+        private async Task Public_IllustInfo(Message message)
         {
             var info = @"The total number of images of Bot is ";
 
@@ -168,7 +168,7 @@ namespace GoldFace_Bot
 
         #region ## /illust ##
 
-        private async void Public_Illust(Message message)
+        private async Task Public_Illust(Message message)
         {
             await Bot.SendChatActionAsync(message.Chat.Id, ChatAction.UploadPhoto);
 
@@ -231,7 +231,7 @@ namespace GoldFace_Bot
 
         #region ## /bank ##
 
-        private async void BankAccountInfo(Message message)
+        private async Task BankAccountInfo(Message message)
         {
             var bankInfo = BotConfig.instance.Config.BankAccountInfo;
 
@@ -255,7 +255,7 @@ namespace GoldFace_Bot
         #endregion
 
         #region ## /bankall ##
-        private async void BankAllAccountInfo(Message message)
+        private async Task BankAllAccountInfo(Message message)
         {
             var bankInfo = BotConfig.instance.Config.BankAccountInfo;
 
@@ -269,7 +269,7 @@ namespace GoldFace_Bot
 
         #region ## /anime ##
 
-        private async void TodayAnimeInfo(Message message)
+        private async Task TodayAnimeInfo(Message message)
         {
             string[] result = message.Text.Split(' ');
             int dayOfWeek = (int)DateTime.Now.DayOfWeek;
@@ -324,10 +324,13 @@ namespace GoldFace_Bot
                 Console.WriteLine("[Error] Response is null or Empty");
                 return null;
             }
+            
+            var anissiaJsonRoot = JsonConvert.DeserializeObject<AnissiaJsonRoot>(responseJson);
 
-            return JsonConvert.DeserializeObject<List<AnissiaAnimeList>>(responseJson);
+            return anissiaJsonRoot.data; //JsonConvert.DeserializeObject<List<AnissiaAnimeList>>(anissiaJsonRoot.data);
         }
 
         #endregion
+        
     }
 }

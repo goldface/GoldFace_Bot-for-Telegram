@@ -47,7 +47,10 @@ namespace GoldFace_Bot
 		private readonly string PUBLIC_ILLUST_FILE_PATH;
 		private readonly XmlDocument xmlUserlist;
 		private static readonly Random cRandom = new Random(unchecked((int)DateTime.Now.Ticks));
-
+		private Dictionary<string, Func<Message, Task>> mMessagesDict = new Dictionary<string, Func<Message, Task>>();
+		
+		private MapleApiService  mMapleService; 
+		
 		public MyBot(string token, string anime_capture_path, string public_illust_path)
 		{
 			Bot = new TelegramBotClient(token);
@@ -58,8 +61,11 @@ namespace GoldFace_Bot
 
 		public void Start()
 		{
+			mMapleService = new MapleApiService(Bot);
+			
 			LoadUserlist();
-
+			AddCommnadList();
+			
 			Bot.OnMessage += BotOnMessageReceived;
 
 			var me = Bot.GetMeAsync().Result;
@@ -81,6 +87,23 @@ namespace GoldFace_Bot
 				Console.WriteLine("xml load fail");
 				CreateXML();
 			}
+		}
+
+		private void AddCommnadList()
+		{
+			mMessagesDict.Add("/animecaptureinfo", PhotoInfo);
+			mMessagesDict.Add("/animecapture", AnimeCapture);
+			mMessagesDict.Add("/help", Help);
+			mMessagesDict.Add("/adduser", AddUser);
+			mMessagesDict.Add("/deleteuser", DeleteUser);
+			mMessagesDict.Add("/illustinfo", Public_IllustInfo);
+			mMessagesDict.Add("/illust", Public_Illust);
+			mMessagesDict.Add("/bankall", BankAllAccountInfo);
+			mMessagesDict.Add("/bank", BankAccountInfo);
+			mMessagesDict.Add("/anime", TodayAnimeInfo);
+			
+			// maple
+			mMessagesDict.Add("/maplecharinfo", mMapleService.SerachCharacterInfo);
 		}
 
 		private bool CheckUser(string username)
@@ -176,48 +199,22 @@ namespace GoldFace_Bot
 			bool access = await AccessCheck(message);
 			if (access == false) { return; }
 
-			if (CommandCheck(message.Text, "/animecaptureinfo"))
+			string command = CommandProcess(message);
+			if (CommandCheck(message.Text, command))
 			{
-				PhotoInfo(message);
+				if(mMessagesDict.ContainsKey(command))
+					await mMessagesDict[command](message);
 			}
-			else if (CommandCheck(message.Text, "/animecapture"))
-			{
-				AnimeCapture(message);
-			}
-			else if (CommandCheck(message.Text, "/help"))
-			{
-				Help(message);
-			}
-			else if (CommandCheck(message.Text, "/adduser"))
-			{
-				AddUser(message);
-			}
-			else if (CommandCheck(message.Text, "/deleteuser"))
-			{
-				DeleteUser(message);
-			}
-			else if (CommandCheck(message.Text, "/illustinfo"))
-			{
-				Public_IllustInfo(message);
-			}
-			else if (CommandCheck(message.Text, "/illust"))
-			{
-				Public_Illust(message);
-			}
-			else if(CommandCheck(message.Text, "/bankall"))
-			{
-				BankAllAccountInfo(message);
-			}
-			else if(CommandCheck(message.Text, "/bank"))
-			{
-				BankAccountInfo(message);
-			}
-			else if (CommandCheck(message.Text, "/anime"))
-            {
-                TodayAnimeInfo(message);
-            }
 
 		   await Task.Delay(100);
+		}
+
+		// 메시지로 부터 명령어를 추출한다.
+		private string CommandProcess(Message message)
+		{
+			string[] splitspace = message.Text.Split(' ');
+			string[] commandArray = splitspace[0].Split('@');
+			return commandArray[0];
 		}
 
 		private string RandFilePath(IMAGE_TYPE type)
@@ -259,10 +256,10 @@ namespace GoldFace_Bot
 			return access;
 		}
 
+		//명령어가 유효한지 체크한다.
 		private bool CommandCheck(string message, string command)
 		{
-			return message.StartsWith(command) ||
-					message.StartsWith(command + "@" + Console.Title);
+			return message.StartsWith(command) || message.StartsWith(command + "@" + Console.Title);
 		}
 
 		private async void SendErrorMessage(Message message, string msg = "")
